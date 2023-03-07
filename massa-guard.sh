@@ -5,6 +5,11 @@
 # Import custom library
 . /massa-guard/sources/lib.sh
 
+echo "TOML PARSED!! PATH_NODE_CONF= $PATH_NODE_CONF"
+# toml --help
+
+# TOML=$(toml get --toml-path $PATH_NODE_CONF/config.toml network.routable_ip)
+# echo "TOML PARSED!! $TOML"
 # Wait node booststrap
 WaitBootstrap
 
