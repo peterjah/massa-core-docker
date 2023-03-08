@@ -26,9 +26,7 @@ WaitBootstrap() {
 # RETURN = Wallet address
 #############################################################
 GetWalletAddress() {
-	cd $PATH_CLIENT
-	WalletAddress=$($PATH_TARGET/massa-client -p $WALLETPWD wallet_info | grep "Address" | cut -d " " -f 2 | head -n 1)
-	echo "$WalletAddress"
+	massa-cli -j wallet_info | jq -r '.[].address_info.address'
 }
 
 #############################################################
@@ -38,13 +36,10 @@ GetWalletAddress() {
 CheckOrCreateWalletAndNodeKey() {
 	## Create a wallet, stacke and backup
 	# If wallet don't exist
-	cd $PATH_CLIENT
-	checkWallet=`$PATH_TARGET/massa-client -p $WALLETPWD wallet_info | grep -c "Address"`
-	if ([ ! -e $PATH_CLIENT/wallet.dat ] || [ $checkWallet -lt 1 ])
+	if [ ! -e $PATH_CLIENT/wallet.dat ]
 	then
 		# Generate wallet
-		cd $PATH_CLIENT
-		$PATH_TARGET/massa-client -p $WALLETPWD wallet_generate_secret_key > /dev/null
+		massa-cli wallet_generate_secret_key > /dev/null
 		green "INFO" "Generate wallet.dat"
 
 		# Backup wallet to the mount point as ref
@@ -56,13 +51,13 @@ CheckOrCreateWalletAndNodeKey() {
 
 	## Stacke if wallet not stacke
 	# If staking_keys don't exist
-	checkStackingKey=`$PATH_TARGET/massa-client -p $WALLETPWD node_get_staking_addresses | grep -c -E "[0-z]{51}"`
+	checkStackingKey=$(massa-cli -j node_get_staking_addresses | jq -r '.[]')
 	if ([ ! -e $PATH_NODE_CONF/staking_wallet.dat ] || [ $checkStackingKey -lt 1 ])
 	then
 		# Get first wallet Address
 		walletAddress=$(GetWalletAddress)
 		# Stacke wallet
-		$PATH_TARGET/massa-client -p $WALLETPWD node_start_staking $walletAddress > /dev/null
+		massa-cli node_start_staking $walletAddress > /dev/null
 		green "INFO" "Stake privKey"
 
 		# Backup staking_wallet.dat to mount point as ref
@@ -89,12 +84,7 @@ CheckOrCreateWalletAndNodeKey() {
 # RETURN = Candidate rolls amount
 #############################################################
 GetCandidateRoll() {
-	# Get address info
-	get_address=$(cd $PATH_CLIENT;$PATH_TARGET/massa-client -p $WALLETPWD wallet_info)
-	# Get candidate roll amount for first Address
-	CandidateRolls=$(echo "$get_address" wallet_info | grep "Rolls" | cut -d "=" -f 4 | head -n 1)
-	# Return candidate roll amount
-	echo "$CandidateRolls"
+	massa-cli -j wallet_info | jq '.[].address_info.candidate_rolls'
 }
 
 #############################################################
@@ -104,12 +94,7 @@ GetCandidateRoll() {
 # RETURN = MAS amount
 #############################################################
 GetMASAmount() {
-	# Get address info
-	get_address=$(cd $PATH_CLIENT;$PATH_TARGET/massa-client -p $WALLETPWD wallet_info)
-	# Get MAS amount for first Address
-	MasAmount=$(echo "$get_address" | grep -E "Balance"." final" | cut -d "=" -f 2 | cut -d "," -f 1 | cut -d "." -f 1 | head -n 1)
-	# Return MAS amount
-	echo "$MasAmount"
+	massa-cli -j wallet_info | jq '.[].address_info.final_balance'
 }
 
 #############################################################
@@ -124,13 +109,12 @@ BuyOrSellRoll() {
 		green "INFO" "Buy 1 Roll"
 
 		# Buy roll amount
-		cd $PATH_CLIENT
-		$PATH_TARGET/massa-client -p $WALLETPWD buy_rolls $3 1 0 > /dev/null
+		massa-cli buy_rolls $3 1 0 > /dev/null
 
 	# If MAS amount < 100 MAS and Candidate roll = 0
 	elif ([ $1 -eq 0 ] && [ $2 -lt 100 ])
 	then
-		warn "Cannot buy first ROLL because MAS Amount less than 100. Please get 100 MAS on Discord or set your DISCORD ID"
+		warn "Cannot buy first ROLL because MAS Amount less than 100. Please get 100 MAS on Discord faucet or set your DISCORD ID"
 	# If MAS amount > 200 MAS and no rolls limitation, buy ROLLs
 	elif ([ $2 -gt 200 ] && [ $TARGET_ROLL_AMOUNT == "NULL" ])
 	then
@@ -138,8 +122,7 @@ BuyOrSellRoll() {
 		green "INFO" "Autobuy $NbRollsToBuy ROLL because MAS amount equal to $2"
 
 		# Buy roll amount
-		cd $PATH_CLIENT
-		$PATH_TARGET/massa-client -p $WALLETPWD buy_rolls $3 $NbRollsToBuy 0 > /dev/null
+		massa-cli buy_rolls $3 $NbRollsToBuy 0 > /dev/null
 
 	# If MAS amount > 200 MAS and rolls limitation is set
 	elif ([ $2 -gt 200 ] && [ ! $TARGET_ROLL_AMOUNT == "NULL" ])
@@ -160,8 +143,7 @@ BuyOrSellRoll() {
 			green "INFO" "Autobuy $NbRollsToBuy ROLL because MAS amount equal to $2 and ROLL amount of $1 less than target amount of $TARGET_ROLL_AMOUNT"
 
 			# Buy roll amount
-			cd $PATH_CLIENT
-			$PATH_TARGET/massa-client -p $WALLETPWD buy_rolls $3 $NbRollsToBuy 0 > /dev/null
+			massa-cli buy_rolls $3 $NbRollsToBuy 0 > /dev/null
 		# If roll target amount less than active roll amount sell exceed rolls
 		elif [ $TARGET_ROLL_AMOUNT -lt $1 ]
 		then
@@ -169,8 +151,7 @@ BuyOrSellRoll() {
 			green "INFO" "Autosell $NbRollsToBuy ROLL because MAS amount equal to $2 and ROLL amount of $1 greater than target amount of $TARGET_ROLL_AMOUNT"
 
 			# Sell roll amount
-			cd $PATH_CLIENT
-			$PATH_TARGET/massa-client -p $WALLETPWD sell_rolls $3 $NbRollsToSell 0 > /dev/null
+			massa-cli sell_rolls $3 $NbRollsToSell 0 > /dev/null
 		fi
 	# If rolls limitation is set
 	elif [ ! $TARGET_ROLL_AMOUNT == "NULL" ]
@@ -182,8 +163,7 @@ BuyOrSellRoll() {
 			green "INFO" "Autosell $NbRollsToBuy ROLL because ROLL amount of $1 greater than target amount of $TARGET_ROLL_AMOUNT"
 
 			# Sell roll amount
-			cd $PATH_CLIENT
-			$PATH_TARGET/massa-client -p $WALLETPWD sell_rolls $3 $NbRollsToSell 0 > /dev/null
+			massa-cli sell_rolls $3 $NbRollsToSell 0 > /dev/null
 		# Else, if max roll target is OK, do nothing
 		else
 			# Do nothing
@@ -220,8 +200,7 @@ CheckNodeRam() {
 #############################################################
 CheckNodeResponsive() {
 	# Check node status and logs events
-	cd $PATH_CLIENT
-	checkGetStatus=$(timeout 2 $PATH_TARGET/massa-client -p $WALLETPWD get_status | wc -l)
+	checkGetStatus=$(timeout 2 massa-cli get_status | wc -l)
 
 	# If get_status is responsive
 	if [ $checkGetStatus -lt 10 ]
@@ -269,7 +248,7 @@ CheckPublicIP() {
 	CONF_IP=$(toml get --toml-path $PATH_NODE_CONF/config.toml network.routable_ip 2>/dev/null)
 
 	# Check if configured IP equal to real IP
-	if [ $myIP == $confIP ]
+	if [ "$myIP" == "$confIP" ]
 	then
 		# Return no change
 		echo 0
@@ -287,12 +266,13 @@ CheckPublicIP() {
 RefreshPublicIP() {
 	# Get Public IP of node
 	myIP=$(GetPublicIP)
+	echo Check if get IP OK myIP=$myIP
 
 	# Check if get IP OK
 	if [ -n "$myIP" ]; then
 		# Get Public IP conf for node
 		CONF_IP=$(toml get --toml-path $PATH_NODE_CONF/config.toml network.routable_ip 2>/dev/null)
-		if [ "$myIP" != "$CONF_IP"]; then
+		if [ "$myIP" != "$CONF_IP" ]; then
 			# Push new IP to massabot
 			timeout 2 python3 $PATH_SOURCES/push_command_to_discord.py $DISCORD $myIP > $PATH_MASSABOT_REPLY
 			# Check massabot return
@@ -318,7 +298,7 @@ RefreshPublicIP() {
 #############################################################
 GetPublicIP() {
 	# Get mon IP
-	myIP=$(curl checkip.amazonaws.com)
+	myIP=$(curl -s checkip.amazonaws.com)
 
 	# Return my public IP
 	echo $myIP
@@ -332,8 +312,7 @@ GetPublicIP() {
 RegisterNodeWithMassabot() {
 	# Get registration hash
 	cd $PATH_CLIENT
-	registrationHashReturn=$($PATH_TARGET/massa-client -p $WALLETPWD "node_testnet_rewards_program_ownership_proof" $1 $2)
-	registrationHash=$(echo $registrationHashReturn | sed -r 's/^Enter the following in discord: //')
+	registrationHash=$(massa-cli -j node_testnet_rewards_program_ownership_proof $1 $2 | jq -r)
 
 	# Push defaut request to massabot
 	timeout 2 python3 $PATH_SOURCES/push_command_to_discord.py $DISCORD $registrationHash > $PATH_MASSABOT_REPLY
