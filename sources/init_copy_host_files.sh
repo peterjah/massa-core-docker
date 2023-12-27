@@ -39,10 +39,8 @@ else
 fi
 
 # Wallet to use
-if [ -z $WALLET_PRIVATE_KEY ]
+if [ -e $PATH_MOUNT/wallet_* ]
 then
-	warn "ERROR" "Secret key is not set, please set WALLET_PRIVATE_KEY in your docker-compose.yml. A new wallet will be created"
-else
-	green "INFO" "Loading wallet from private key"
-	massa-cli -j wallet_add_secret_keys $WALLET_PRIVATE_KEY
+	cp $PATH_MOUNT/wallet_* $PATH_CLIENT/wallets/
+	green "INFO" "Load wallet from massa_mount to client"
 fi

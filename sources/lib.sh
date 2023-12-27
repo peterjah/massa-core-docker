@@ -37,15 +37,15 @@ CheckOrCreateWalletAndNodeKey() {
 
 	walletAddress=$(GetWalletAddress)
 
-	## Create a wallet, stacke and backup
+	## Import wallet, stake and backup
 	# If wallet don't exist
 	if [ -z "$walletAddress" ]
 	then
 		# Generate wallet
-		massa-cli wallet_generate_secret_key > /dev/null
+		massa-cli -j wallet_add_secret_keys $WALLET_PRIVATE_KEY > /dev/null
 		walletAddress=$(GetWalletAddress)
 		walletFile=wallet_$walletAddress.yaml
-		green "INFO" "Wallet $walletAddress created"
+		green "INFO" "Wallet $walletAddress imported"
 	fi
 
 	# Backup wallet to the mount point
@@ -53,7 +53,7 @@ CheckOrCreateWalletAndNodeKey() {
 	then
 		walletFile=wallet_$walletAddress.yaml
 		cp $PATH_CLIENT/wallets/$walletFile $PATH_MOUNT/$walletFile
-		green "INFO" "Backup $walletFile"
+		green "INFO" "Backup $walletFile to massa_mount"
 	fi
 
 	## Check if wallet is staked
