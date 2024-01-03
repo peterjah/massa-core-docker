@@ -234,7 +234,7 @@ CheckPublicIP() {
 	myIP=$(GetPublicIP)
 
 	# Get Public IP conf for node
-	CONF_IP=$(toml get --toml-path $PATH_NODE_CONF/config.toml protocol.routable_ip 2>/dev/null)
+	CONF_IP=$(toml get $PATH_NODE_CONF/config.toml protocol.routable_ip 2>/dev/null)
 
 	# Check if configured IP equal to real IP
 	if [ "$myIP" != "$confIP" ]; then
@@ -255,7 +255,7 @@ RefreshPublicIP() {
 	# Check if get IP OK
 	if [ -n "$myIP" ]; then
 		# Update IP in your ref config.toml and restart node
-		toml set --toml-path $PATH_MOUNT/config.toml protocol.routable_ip $myIP
+		toml set $PATH_MOUNT/config.toml protocol.routable_ip $myIP
 		RestartNode
 	else
       warn "WARN" "Unable to retrieve public IP address"

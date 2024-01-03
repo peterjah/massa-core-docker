@@ -14,10 +14,14 @@ RUN if [ "$TARGETARCH" == "amd64" ]; \
 ENV FILENAME="massa_${VERSION}_release_linux$ARM.tar.gz"
 ENV NODE_URL="https://github.com/massalabs/massa/releases/download/$VERSION/$FILENAME"
 
-# Download and extract the Massa node archive
+# Download and install Massa node
 ADD $NODE_URL $FILENAME
-RUN tar -xf $FILENAME
-RUN rm $FILENAME
+RUN tar -xf $FILENAME && rm $FILENAME
+
+# Download and install toml cli tool
+ENV TOML_CLI_URL="https://github.com/gnprice/toml-cli/releases/download/v0.2.3/toml-0.2.3-x86_64-linux.tar.gz"
+ADD $TOML_CLI_URL toml.tar.gz
+RUN tar -xzf toml.tar.gz && cp toml-0.2.3-x86_64-linux/toml /usr/bin/toml && rm toml.tar.gz
 
 # LABEL about the custom image
 LABEL maintainers="benoit@alphatux.fr, ps@massa.org"
@@ -25,10 +29,7 @@ LABEL version=$VERSION
 LABEL description="Massa node with massa-guard features"
 
 # Update and install packages dependencies
-RUN apt-get update \
-&& apt install -y curl jq python3-pip \
-&& python3 -m pip install -U toml-cli
-
+RUN apt-get update && apt install -y curl jq
 
 # Create massa-guard tree
 RUN mkdir -p /massa-guard/sources \
