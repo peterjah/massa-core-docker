@@ -6,6 +6,19 @@ ARG VERSION
 
 ENV VERSION=$VERSION
 
+RUN if [ "$TARGETARCH" == "amd64" ]; \
+    then export ARM=""; \
+    else export ARM="_arm64"; \
+    fi
+
+ENV FILENAME="massa_${VERSION}_release_linux$ARM.tar.gz"
+ENV NODE_URL="https://github.com/massalabs/massa/releases/download/$VERSION/$FILENAME"
+
+# Download and extract the Massa node archive
+ADD $NODE_URL $FILENAME
+RUN tar -xf $FILENAME
+RUN rm $FILENAME
+
 # LABEL about the custom image
 LABEL maintainers="benoit@alphatux.fr, ps@massa.org"
 LABEL version=$VERSION
@@ -16,11 +29,6 @@ RUN apt-get update \
 && apt install -y curl jq python3-pip \
 && python3 -m pip install -U toml-cli
 
-# Download the Massa package
-COPY download-massa.sh .
-RUN chmod u+x download-massa.sh \
-&& ./download-massa.sh \
-&& rm download-massa.sh
 
 # Create massa-guard tree
 RUN mkdir -p /massa-guard/sources \
