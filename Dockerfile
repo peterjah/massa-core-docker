@@ -1,35 +1,37 @@
 FROM ubuntu:22.04
 
+# LABEL about the custom image
+LABEL maintainers="benoit@alphatux.fr, ps@massa.org"
+LABEL version=$VERSION
+LABEL description="Massa node with massa-guard features"
+
 # Build Arguments
 ARG TARGETARCH
 ARG VERSION
 
 ENV VERSION=$VERSION
 
-RUN if [ "$TARGETARCH" == "amd64" ]; \
-    then export ARM=""; \
-    else export ARM="_arm64"; \
-    fi
-
-ENV FILENAME="massa_${VERSION}_release_linux$ARM.tar.gz"
-ENV NODE_URL="https://github.com/massalabs/massa/releases/download/$VERSION/$FILENAME"
-
-# Download and install Massa node
-ADD $NODE_URL $FILENAME
-RUN tar -xf $FILENAME && rm $FILENAME
-
-# Download and install toml cli tool
-ENV TOML_CLI_URL="https://github.com/gnprice/toml-cli/releases/download/v0.2.3/toml-0.2.3-x86_64-linux.tar.gz"
-ADD $TOML_CLI_URL toml.tar.gz
-RUN tar -xzf toml.tar.gz && cp toml-0.2.3-x86_64-linux/toml /usr/bin/toml && rm toml.tar.gz
-
-# LABEL about the custom image
-LABEL maintainers="benoit@alphatux.fr, ps@massa.org"
-LABEL version=$VERSION
-LABEL description="Massa node with massa-guard features"
-
 # Update and install packages dependencies
 RUN apt-get update && apt install -y curl jq
+
+RUN if [ "$TARGETARCH" = "amd64" ]; then \
+        TOML_CLI_URL="https://github.com/gnprice/toml-cli/releases/download/v0.2.3/toml-0.2.3-x86_64-linux.tar.gz"; \
+        curl -Ls -o toml-cli.tar.gz $TOML_CLI_URL; \
+    else \
+        ARM="_arm64"; \
+        TOML_CLI_URL="bin/toml-cli-arm"; \
+    fi; \
+    FILENAME="massa_${VERSION}_release_linux${ARM}.tar.gz"; \
+    NODE_URL="https://github.com/massalabs/massa/releases/download/${VERSION}/${FILENAME}"; \
+    curl -Ls -o $FILENAME $NODE_URL; \
+    tar -xf $FILENAME && rm $FILENAME
+
+# Download and install toml cli tool
+ADD "bin/toml-cli-arm" toml-cli-arm
+
+RUN if [ "$TARGETARCH" = "amd64" ]; then tar -xzf toml-cli.tar.gz && cp toml-0.2.3-x86_64-linux/toml /usr/bin/toml; fi
+RUN if [ "$TARGETARCH" != "amd64" ]; then cp toml-cli-arm /usr/bin/toml; fi
+RUN rm -rf toml*
 
 # Create massa-guard tree
 RUN mkdir -p /massa-guard/sources \

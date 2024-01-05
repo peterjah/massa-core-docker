@@ -61,7 +61,7 @@ then
 	green "INFO" "Loading wallet $walletFile from massa_mount to client"
 	mkdir -p $PATH_CLIENT/wallets
 	cp $walletFile $PATH_CLIENT/wallets/
-elif [ -n $WALLET_PRIVATE_KEY ]
+elif [ -n "$WALLET_PRIVATE_KEY" ]
 then
 	green "INFO" "Loading wallet from environement private key"
 	massa-cli -j wallet_add_secret_keys $WALLET_PRIVATE_KEY
