@@ -1,7 +1,4 @@
 #!/bin/bash
-#==================== Configuration ========================#
-# Configuration generale
-. /massa-guard/config/default_config.ini
 # Import custom library
 . /massa-guard/sources/lib.sh
 
@@ -37,11 +34,11 @@ then
 	green "INFO" "Load node_config_$VERSION.toml"
 else
 	# Set bootstrap mode to ipv4 only
-	toml set $PATH_NODE/base_config/config.toml bootstrap.bootstrap_protocol "IPv4"
+	toml set $PATH_NODE/base_config/config.toml bootstrap.bootstrap_protocol "IPv4" &>/dev/null
 
 	# Set storage path to massa_mount
-	toml set $PATH_NODE/base_config/config.toml execution.hd_cache_path "/massa_mount/storage/cache/rocks_db"
-	toml set $PATH_NODE/base_config/config.toml ledger.disk_ledger_path "/massa_mount/storage/ledger/rocks_db"
+	toml set $PATH_NODE/base_config/config.toml execution.hd_cache_path "/massa_mount/storage/cache/rocks_db" &>/dev/null
+	toml set $PATH_NODE/base_config/config.toml ledger.disk_ledger_path "/massa_mount/storage/ledger/rocks_db" &>/dev/null
 
 	cp $PATH_NODE/base_config/config.toml node_config_$VERSION.toml
 fi

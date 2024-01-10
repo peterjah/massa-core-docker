@@ -1,7 +1,4 @@
 #!/bin/bash
-#====================== Configuration ==========================#
-# Global configuration
-. /massa-guard/config/default_config.ini
 # Import custom library
 . /massa-guard/sources/lib.sh
 

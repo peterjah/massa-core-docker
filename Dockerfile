@@ -11,6 +11,11 @@ ARG VERSION
 
 ENV VERSION=$VERSION
 
+ENV PATH_MOUNT=/massa_mount
+ENV PATH_CLIENT=/massa/massa-client
+ENV PATH_NODE=/massa/massa-node
+ENV PATH_NODE_CONF=/massa/massa-node/config
+
 # Update and install packages dependencies
 RUN apt-get update && apt install -y curl jq
 
@@ -41,7 +46,6 @@ RUN mkdir -p /massa-guard/sources \
 COPY massa-guard.sh /massa-guard/
 COPY sources/cli.sh /cli.sh
 COPY sources /massa-guard/sources
-COPY config /massa-guard/config
 
 # Conf rights
 RUN chmod +x /massa-guard/massa-guard.sh \
