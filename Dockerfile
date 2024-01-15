@@ -19,28 +19,22 @@ ENV PATH_NODE_CONF=/massa/massa-node/config
 # Update and install packages dependencies
 RUN apt-get update && apt install -y curl jq
 
+COPY bin /massa-guard/bin
+
 RUN if [ "$TARGETARCH" = "amd64" ]; then \
-        TOML_CLI_URL="https://github.com/gnprice/toml-cli/releases/download/v0.2.3/toml-0.2.3-x86_64-linux.tar.gz"; \
-        curl -Ls -o toml-cli.tar.gz $TOML_CLI_URL; \
+        TOML_CLI_BIN="/massa-guard/bin/toml-cli"; \
     else \
         ARM="_arm64"; \
-        TOML_CLI_URL="bin/toml-cli-arm"; \
+        TOML_CLI_BIN="/massa-guard/bin/toml-cli-arm"; \
     fi; \
+    cp $TOML_CLI_BIN /usr/bin/toml && rm -rf /massa-guard/bin; \
     FILENAME="massa_${VERSION}_release_linux${ARM}.tar.gz"; \
     NODE_URL="https://github.com/massalabs/massa/releases/download/${VERSION}/${FILENAME}"; \
     curl -Ls -o $FILENAME $NODE_URL; \
     tar -xf $FILENAME && rm $FILENAME
 
-# Download and install toml cli tool
-ADD "bin/toml-cli-arm" toml-cli-arm
-
-RUN if [ "$TARGETARCH" = "amd64" ]; then tar -xzf toml-cli.tar.gz && cp toml-0.2.3-x86_64-linux/toml /usr/bin/toml; fi
-RUN if [ "$TARGETARCH" != "amd64" ]; then cp toml-cli-arm /usr/bin/toml; fi
-RUN rm -rf toml*
-
 # Create massa-guard tree
-RUN mkdir -p /massa-guard/sources \
-&& mkdir -p /massa-guard/config
+RUN mkdir -p /massa-guard/sources
 
 # Copy massa-guard sources
 COPY massa-guard.sh /massa-guard/

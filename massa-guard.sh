@@ -47,8 +47,6 @@ do
 				RefreshPublicIP
 			fi
 		fi
-		
-		
 	fi
 	# Wait before next loop
 	sleep 2m

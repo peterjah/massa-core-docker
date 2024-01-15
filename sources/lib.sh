@@ -115,7 +115,7 @@ GetMASAmount() {
 
 #############################################################
 # FONCTION = BuyOrSellRoll
-# DESCRIPTION = Adujst roll amount with max roll settings and if MAS amount > 200 or if candidate roll < 1 and MAS amount >= 100
+# DESCRIPTION = Adujst roll amount to target
 #############################################################
 BuyOrSellRoll() {
 	WalletAddress=$(GetWalletAddress)
@@ -255,7 +255,7 @@ RefreshPublicIP() {
 	# Check if get IP OK
 	if [ -n "$myIP" ]; then
 		# Update IP in your ref config.toml and restart node
-		toml set $PATH_MOUNT/config.toml protocol.routable_ip $myIP  &>/dev/null
+		toml set $PATH_MOUNT/config.toml protocol.routable_ip "$myIP"
 		RestartNode
 	else
       warn "WARN" "Unable to retrieve public IP address"

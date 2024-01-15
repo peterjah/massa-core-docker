@@ -27,20 +27,23 @@ else
 	green "INFO" "Create your default config.toml with $myIP as routable IP"
 fi
 
+CONF_FILE=$PATH_NODE/base_config/config.toml
+
 # Custom node config
 if [ -e node_config_$VERSION.toml ]
 then
-	cp node_config_$VERSION.toml $PATH_NODE/base_config/config.toml
+	cp node_config_$VERSION.toml $CONF_FILE
 	green "INFO" "Load node_config_$VERSION.toml"
 else
-	# Set bootstrap mode to ipv4 only
-	toml set $PATH_NODE/base_config/config.toml bootstrap.bootstrap_protocol "IPv4" &>/dev/null
 
-	# Set storage path to massa_mount
-	toml set $PATH_NODE/base_config/config.toml execution.hd_cache_path "/massa_mount/storage/cache/rocks_db" &>/dev/null
-	toml set $PATH_NODE/base_config/config.toml ledger.disk_ledger_path "/massa_mount/storage/ledger/rocks_db" &>/dev/null
+	green "INFO" "Set bootstrap mode to ipv4 only"
+	toml set $CONF_FILE bootstrap.bootstrap_protocol "IPv4"
 
-	cp $PATH_NODE/base_config/config.toml node_config_$VERSION.toml
+	green "INFO" "Set storage path to massa_mount"
+	toml set $CONF_FILE execution.hd_cache_path "/massa_mount/storage/cache/rocks_db"
+	toml set $CONF_FILE ledger.disk_ledger_path "/massa_mount/storage/ledger/rocks_db"
+
+	cp $CONF_FILE node_config_$VERSION.toml
 fi
 
 # check only one wallet in massa_mount
