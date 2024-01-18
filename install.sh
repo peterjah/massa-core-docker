@@ -9,8 +9,15 @@ rm get-docker.sh
 
 curl -fsSL https://raw.githubusercontent.com/peterjah/massa-core-docker/main/docker-compose.yml -o docker-compose.yml
 
-read  -p "Enter wallet password: " walletPassword
 read  -p "Enter wallet privateKey: " privateKey
+
+read  -p "Create a wallet password: " walletPassword
+read  -p "Confirm your wallet password: " walletPasswordconf
+
+if [ "$walletPassword" != "$walletPasswordconf" ]; then
+    echo "Passwords do not match. Please try again."
+    exit 1
+fi
 
 cat << EOF > .env
 WALLETPWD=${walletPassword}

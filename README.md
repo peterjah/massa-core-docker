@@ -12,11 +12,27 @@
   * Auto update of your public IP (usefull for connections with dynamic ip)
   * All docker features ( run in background, persistent logs, always restart)
 
+## Quick install wizard
 
-## Requirements
+  This script install docker on your system, setup and run a Massa node from a massa wallet private key. Buying rolls and taking will start right away.
+
+ 1. Download the script
+   ```bash
+   curl -fsSL https://raw.githubusercontent.com/peterjah/massa-core-docker/main/install.sh -o install-massa.sh
+   ```
+
+ 2. Run the installer
+   ```bash
+   sudo sh install-massa.sh
+   ```
+   * The script will ask you to enter your wallet private key and create a password
+
+## Manual install
+
+#### Requirements
   * Install docker and docker-compose on your system
 
-## How to use
+### How to setup
 
   * Create a `docker-compose.yml` file. Copy the provided content below, and customize it by adding your specific environment variables.
   * WALLETPWD is mandatory. It is the password to unlock your wallet. If you are importing wallet from private key, this password will be used to encrypt wallet backup file
