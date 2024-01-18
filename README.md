@@ -2,7 +2,7 @@
 ![alt text](https://d33wubrfki0l68.cloudfront.net/7df7d7a57a8dda3cc07aab16121b3e3990cf0893/16ccd/portfolio/massa.png)
 
 # Dockerized Massa node #
-**Last build for Massa node version MAIN.2.0**
+**Last build for Massa node version MAIN.2.1**
 
 ## Features
   * Easy import your wallet from private key or .yaml file
@@ -44,13 +44,21 @@ services:
      - "31244:31244"
      - "31245:31245"
      - "33035:33035"
-     #- "31248:31248" prometheus metrics port. Uncomment to use with grafana
+     #- "31248:31248" prometheus metrics port. Uncomment to use with grafana dashboard
     cap_add:
       - SYS_NICE
       - SYS_RESOURCE
       - SYS_TIME
     volumes:
      - ./massa_mount:/massa_mount
+
+    # Uncomment this to activate auto updates
+    # watchtower:
+    #   image: containrrr/watchtower
+    #   container_name: watchtower
+    #   volumes:
+    #     - /var/run/docker.sock:/var/run/docker.sock
+    #   command: --stop-timeout 360s --interval 300 massa-core
 
 volumes:
   massa-core:
@@ -94,6 +102,15 @@ docker exec -t massa-core massa-cli get_status
 ```bash
 docker exec -t massa-core massa-cli wallet_info
 ```
+
+
+### Dashboard
+
+  * Dockprom stack to monitor your node.
+  see https://github.com/enzofoucaud/dockmas
+
+![image info](./img/dashboard.png)
+
 
 ### Log rotation
   Logs from your running docker will accumulate with the time. To avoid the disk to be full, you can setup log rotation at Docker level.
