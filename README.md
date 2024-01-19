@@ -14,9 +14,9 @@
 
 ## Quick install wizard
 
-  This script install docker on your system, setup and run a Massa node from a massa wallet private key. Buying rolls and taking will start right away.
+  This script will install and run a Massa node using your massa wallet private key. Buying rolls and staking will start right away. Yes my friend!
 
- 1. Download the script
+ 1. Download the installer
    ```bash
    curl -fsSL https://raw.githubusercontent.com/peterjah/massa-core-docker/main/install.sh -o install-massa.sh
    ```
@@ -91,32 +91,42 @@ volumes:
 
   * Start the container in detached mode:
 ```bash
-docker compose up -d
+sudo docker compose up -d
+```
+
+  * Stop the container in detached mode:
+```bash
+sudo docker compose down
+```
+
+  * Update your node to latest version and restart it:
+```bash
+sudo docker compose pull && sudo docker compose up -d
 ```
 
   * See the node logs:
 ```bash
-docker compose logs
+sudo docker compose logs
 ```
 
   * Filter to get only Massa-guard logs:
 ```bash
-docker compose logs | grep Massa-Guard
+sudo docker compose logs | grep Massa-Guard
 ```
 
   * To enter your container:
 ```bash
-docker exec -it massa-core /bin/bash
+sudo docker exec -it massa-core /bin/bash
 ```
 
   * Using massa client to get node status:
 ```bash
-docker exec -t massa-core massa-cli get_status
+sudo docker exec -t massa-core massa-cli get_status
 ```
 
   * Using massa client to get your wallet info:
 ```bash
-docker exec -t massa-core massa-cli wallet_info
+sudo docker exec -t massa-core massa-cli wallet_info
 ```
 
 
