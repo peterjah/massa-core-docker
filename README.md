@@ -14,7 +14,7 @@
 
 ## Quick install wizard
 
-  This script will install and run a Massa node using your massa wallet private key. Buying rolls and staking will start right away. Yes my friend!
+  This script will install and run a Massa node. Buying rolls and start staking right away. Yes my friend!
 
  1. Download the installer
    ```bash
@@ -25,7 +25,8 @@
    ```bash
    sudo sh install-massa.sh
    ```
-   * The script will ask you to enter your wallet private key and create a password
+   * The script will install docker and setup your docker compose file
+   * If you wish to import a wallet from a private key, the script will setup it for you.
 
 ## Manual install
 
@@ -81,7 +82,7 @@ volumes:
 ```
 #### Available options:
 
- - `DYNIP`: Set with "0" if you host under static public IP or "1" if you host under dynimic public IP to enable update IP feature
+ - `DYNIP`: Set to "1" if you host under dynamic public IP. Disabled by default.
  - `WALLETPWD`: Password used to encrypt wallet yaml file.
  - `WALLET_PRIVATE_KEY`: Optional. Private key to import
  - `NODE_MAX_RAM`: The app node will auto restart if RAM usage goes over this % threshold. Default to 99%.

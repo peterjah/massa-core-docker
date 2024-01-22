@@ -1,25 +1,24 @@
-version: '3'
+version: "3"
 services:
-
   massa-core:
     image: peterjah/massa-core
     container_name: massa-core
     restart: always
     environment:
       - WALLETPWD=${WALLETPWD}
-      - WALLET_PRIVATE_KEY=${WALLET_PRIVATE_KEY}
+    #Use the following option to import a wallet from a private key
+    # - WALLET_PRIVATE_KEY=${WALLET_PRIVATE_KEY}
     ports:
-     - "31244:31244"
-     - "31245:31245"
-     - "33035:33035"
+      - "31244:31244"
+      - "31245:31245"
+      - "33035:33035"
+      #- "31248:31248" prometheus metrics port. Uncomment to use with grafana dashboard
     cap_add:
       - SYS_NICE
       - SYS_RESOURCE
       - SYS_TIME
     volumes:
-     - ./massa_mount:/massa_mount
+      - ./massa_mount:/massa_mount
 
 volumes:
   massa-core:
-
-
