@@ -34,6 +34,8 @@ WALLETPWD=${walletPassword}
 WALLET_PRIVATE_KEY=${privateKey}
 EOF
 
+sed -i 's/# - WALLET_PRIVATE_KEY=${WALLET_PRIVATE_KEY}/  - WALLET_PRIVATE_KEY=${WALLET_PRIVATE_KEY}/' docker-compose.yml
+
 sudo docker compose pull
 sudo docker compose up -d
 
