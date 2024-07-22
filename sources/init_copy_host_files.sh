@@ -43,6 +43,13 @@ else
 	toml set $CONF_FILE execution.hd_cache_path "/massa_mount/storage/cache/rocks_db"
 	toml set $CONF_FILE ledger.disk_ledger_path "/massa_mount/storage/ledger/rocks_db"
 
+	# If MINIMAL_FEE is set, edit the config accordingly
+	if [ -n "$MINIMAL_FEE" ]
+	then
+		green "INFO" "Set minimal fee to $MINIMAL_FEE"
+		toml set $CONF_FILE pool.minimal_fees "$MINIMAL_FEE"
+	fi
+
 	cp $CONF_FILE node_config_$VERSION.toml
 fi
 

@@ -2,7 +2,7 @@
 ![alt text](https://d33wubrfki0l68.cloudfront.net/7df7d7a57a8dda3cc07aab16121b3e3990cf0893/16ccd/portfolio/massa.png)
 
 # Dockerized Massa node #
-**Last build for Massa node version MAIN.2.1**
+**Last build for Massa node version MAIN.2.3**
 
 ## Features
   * Easy import your wallet from private key or .yaml file
@@ -57,6 +57,7 @@ services:
       - WALLETPWD=
     # use this to import wallet from private key
     # - WALLET_PRIVATE_KEY=
+      - MINIMAL_FEE=0
     ports:
      - "31244:31244"
      - "31245:31245"
@@ -82,6 +83,7 @@ volumes:
 ```
 #### Available options:
 
+ - `MINIMAL_FEE`: Configure the minimal fee to be included in operation. Below this, the node will reject the operation. Massa node default is 0.01MAS 
  - `DYNIP`: Set to "1" if you host under dynamic public IP. Disabled by default.
  - `WALLETPWD`: Password used to encrypt wallet yaml file.
  - `WALLET_PRIVATE_KEY`: Optional. Private key to import
