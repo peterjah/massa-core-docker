@@ -142,14 +142,14 @@ BuyOrSellRoll() {
 		local rolls_to_buy=$1
 		green "INFO" "Buying $rolls_to_buy roll(s)..."
 		# Call massa-cli command to buy rolls
-		massa-cli buy_rolls $WalletAddress $rolls_to_buy 0 > /dev/null
+		massa-cli buy_rolls $WalletAddress $rolls_to_buy $MINIMAL_FEE > /dev/null
 	}
 
 	function sell_rolls {
 		local rolls_to_sell=$1
 		green "INFO"  "Selling $rolls_to_sell roll(s)..."
 		# Call massa-cli command to sell rolls
-		massa-cli sell_rolls $WalletAddress $rolls_to_sell 0 > /dev/null
+		massa-cli sell_rolls $WalletAddress $rolls_to_sell $MINIMAL_FEE > /dev/null
 	}
 
 	if (( $targetRollAmount == 0 )); then

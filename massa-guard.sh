@@ -10,7 +10,7 @@ CheckOrCreateWalletAndNodeKey
 
 DYNIP="${DYNIP:-0}"
 TARGET_ROLL_AMOUNT="${TARGET_ROLL_AMOUNT:-0}"
-
+MINIMAL_FEE="${MINIMAL_FEE:-0}"
 #==================== Massa-guard circle =========================#
 # Infinite check
 while true; do
