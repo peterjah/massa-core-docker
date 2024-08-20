@@ -1,4 +1,3 @@
-version: "3"
 services:
   massa-core:
     image: peterjah/massa-core

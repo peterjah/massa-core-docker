@@ -46,7 +46,6 @@
 
 ```yaml
 # docker-compose.yml
-version: '3'
 services:
 
   massa-core:
