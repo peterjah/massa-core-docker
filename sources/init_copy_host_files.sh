@@ -2,6 +2,8 @@
 # Import custom library
 . /massa-guard/sources/lib.sh
 
+MINIMAL_FEE="${MINIMAL_FEE:-0}"
+
 ## Copy/refresh massa_mount wallet and config files if exists
 if [ $IP ]; then
 	myIP=$IP
