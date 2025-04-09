@@ -18,4 +18,4 @@ fi
 
 # Launch node
 cd $PATH_NODE
-./massa-node -p $WALLETPWD
+./massa-node -a -p $WALLETPWD
