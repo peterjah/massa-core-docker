@@ -237,7 +237,7 @@ CheckPublicIP() {
 	CONF_IP=$(toml get $PATH_NODE_CONF/config.toml protocol.routable_ip 2>/dev/null)
 
 	# Check if configured IP equal to real IP
-	if [ "$myIP" != "$confIP" ]; then
+	if [ "$myIP" != "$CONF_IP" ]; then
 		# Return no change
 		return 1
 	fi
