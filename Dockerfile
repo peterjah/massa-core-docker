@@ -2,12 +2,12 @@ FROM ubuntu:22.04
 
 # LABEL about the custom image
 LABEL maintainers="benoit@alphatux.fr, ps@massa.org"
-LABEL version=$VERSION
 LABEL description="Massa node with massa-guard features"
 
 # Build Arguments
 ARG TARGETARCH
 ARG VERSION
+LABEL version=$VERSION
 
 ENV VERSION=$VERSION
 

@@ -2,7 +2,7 @@
 ![alt text](https://d33wubrfki0l68.cloudfront.net/7df7d7a57a8dda3cc07aab16121b3e3990cf0893/16ccd/portfolio/massa.png)
 
 # Dockerized Massa node #
-**Last build for Massa node version MAIN.2.5.1**
+**Last build for Massa node version MAIN.3.0**
 
 ## Features
   * Easy import your wallet from private key or .yaml file
