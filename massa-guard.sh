@@ -23,7 +23,7 @@ while true; do
 	# Restart node if issue
 	if [[ $NodeResponsive -eq 1 || $ramCheck -eq 1 ]]; then
 		RestartNode
-		return
+		exit
 	fi
 
 	# Buy max roll or 1 roll if possible when candidate roll amount = 0

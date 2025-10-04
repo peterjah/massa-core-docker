@@ -195,7 +195,9 @@ docker run -d --restart=always -v /var/run/docker.sock:/var/run/docker.sock:ro -
 Thanks to **fsidhoum** and **dockyr** for help
 
 ## [TIPS] ##
-Tips are welcome 
+💡 Tips are welcome! 🙏
+
 AU12ZEgGTzXj2gZzKebKju4npbFui3pAWW58DtFRQGTEUQA4ggBmS
-Use [Syntra](https://syntra.massa.network/?recipient=AU12ZEgGTzXj2gZzKebKju4npbFui3pAWW58DtFRQGTEUQA4ggBmS) to setup recurent tips
+
+Use [Syntra](https://syntra.massa.network/?recipient=AU12ZEgGTzXj2gZzKebKju4npbFui3pAWW58DtFRQGTEUQA4ggBmS) to setup recurent tips 💸
 
