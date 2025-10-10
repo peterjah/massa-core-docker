@@ -14,10 +14,9 @@ services:
       #- "31248:31248" prometheus metrics port. Uncomment to use with grafana dashboard
     cap_add:
       - SYS_NICE
-      - SYS_RESOURCE
-      - SYS_TIME
+    # Removed SYS_RESOURCE and SYS_TIME for security reasons
     volumes:
-      - ./massa_mount:/massa_mount
+     - ./massa_mount:/massa_mount
 
 volumes:
   massa-core:
