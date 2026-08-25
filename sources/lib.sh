@@ -1,5 +1,7 @@
 
 
+# Port the node exposes its public JSON-RPC API on
+API_PORT=${API_PORT:-33035}
 green () { echo -e "Massa-Guard \033[01;32m$1\033[0m [$(date +%Y%m%d-%HH%M)] $2"; }
 
 warn () { echo -e "Massa-Guard \033[01;33m$1\033[0m [$(date +%Y%m%d-%HH%M)] $2"; }
@@ -205,12 +207,28 @@ CheckNodeRam() {
 # RETURN = NodeResponsiveStatus 0 for OK Logs for KO
 #############################################################
 CheckNodeResponsive() {
-	# Check node status and logs events
-	checkGetStatus=$(timeout 2 massa-cli get_status | wc -l)
+	# Query the public JSON-RPC API directly. Going through massa-cli spawns a
+	# massa-client and decrypts the wallet on every call, which can outlast a
+	# short timeout while the node is replaying slots after a bootstrap, and
+	# gets a perfectly healthy node killed.
+	NODE_STATUS_ERROR=""
 
-	# If get_status is responsive
-	if [ $checkGetStatus -lt 10 ]
+	local statusTimeout=${NODE_STATUS_TIMEOUT:-15}
+	local response
+
+	response=$(curl -s -m "$statusTimeout" -X POST "http://127.0.0.1:${API_PORT}" \
+		-H 'Content-Type: application/json' \
+		-d '{"jsonrpc":"2.0","method":"get_status","params":[[]],"id":1}' 2>/dev/null)
+
+	if [ -z "$response" ]
 	then
+		NODE_STATUS_ERROR="no answer from the public API within ${statusTimeout}s"
+		return 1
+	fi
+
+	if ! echo "$response" | jq -e '.result.node_id' > /dev/null 2>&1
+	then
+		NODE_STATUS_ERROR="unexpected API answer: $(echo "$response" | tr -d '\n' | head -c 200)"
 		return 1
 	fi
 }
@@ -221,6 +239,7 @@ CheckNodeResponsive() {
 
 #############################################################
 RestartNode() {
+	warn "INFO" "Sending SIGTERM to massa-node"
 	pkill massa-node
 }
 
