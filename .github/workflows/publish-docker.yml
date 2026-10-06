@@ -3,9 +3,20 @@ name: Build and Publish Docker Image
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: "Massa node release version"
+      massa_version:
+        description: "Massa node release to embed (GitHub release tag of massalabs/massa, e.g. MAIN.5.0)"
         required: true
+        type: string
+      docker_tag:
+        description: "Docker Hub tag to publish (peterjah/massa-core:<tag>). Leave empty to use the Massa node version"
+        required: false
+        type: string
+        default: ""
+      push_latest:
+        description: "Also publish as peterjah/massa-core:latest (auto-updates every watchtower user)"
+        required: true
+        type: boolean
+        default: false
 
 jobs:
 
@@ -14,7 +25,32 @@ jobs:
 
     steps:
       - name: Checkout the source code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
+
+      - name: Compute Docker tags
+        id: tags
+        env:
+          MASSA_VERSION: ${{ inputs.massa_version }}
+          DOCKER_TAG: ${{ inputs.docker_tag }}
+          PUSH_LATEST: ${{ inputs.push_latest }}
+        run: |
+          TAG="${DOCKER_TAG:-$MASSA_VERSION}"
+          # Docker tag grammar: [A-Za-z0-9_][A-Za-z0-9_.-]{0,127}
+          if ! [[ "$TAG" =~ ^[A-Za-z0-9_][A-Za-z0-9_.-]{0,127}$ ]]; then
+            echo "::error::Invalid Docker tag '$TAG'"
+            exit 1
+          fi
+          TAGS="peterjah/massa-core:$TAG"
+          if [ "$PUSH_LATEST" = "true" ]; then
+            TAGS="$TAGS,peterjah/massa-core:latest"
+          fi
+          echo "tags=$TAGS" >> "$GITHUB_OUTPUT"
+          {
+            echo "### Publishing"
+            echo "- Massa node version: \`$MASSA_VERSION\`"
+            echo "- Branch: \`$GITHUB_REF_NAME\`"
+            echo "- Docker tags: \`$TAGS\`"
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -28,7 +64,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          build-args: VERSION=${{ inputs.version }}
+          build-args: VERSION=${{ inputs.massa_version }}
           platforms: linux/amd64, linux/arm64/v8
           push: true
-          tags: peterjah/massa-core:${{ inputs.version }}, peterjah/massa-core:latest
+          tags: ${{ steps.tags.outputs.tags }}
