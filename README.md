@@ -68,13 +68,15 @@ services:
     volumes:
      - ./massa_mount:/massa_mount
 
-    # Uncomment this to activate auto updates
-    # watchtower:
-    #   image: containrrr/watchtower
-    #   container_name: watchtower
-    #   volumes:
-    #     - /var/run/docker.sock:/var/run/docker.sock
-    #   command: --stop-timeout 360s --interval 300 massa-core
+  # Uncomment this to activate auto updates
+  # watchtower:
+  #   image: containrrr/watchtower
+  #   container_name: watchtower
+  #   environment:
+  #     - DOCKER_API_VERSION=1.40
+  #   volumes:
+  #     - /var/run/docker.sock:/var/run/docker.sock
+  #   command: --stop-timeout 360s --interval 300 massa-core
 
 volumes:
   massa-core:
@@ -160,11 +162,25 @@ We recommend the use of watchtower to automagically pull the latest version of t
   watchtower:
     image: containrrr/watchtower
     container_name: watchtower
+    environment:
+      - DOCKER_API_VERSION=1.40
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     command: --stop-timeout 360s --interval 300 massa-core
 ...
 ```
+
+`DOCKER_API_VERSION` is required. `containrrr/watchtower` is unmaintained — its
+last release (1.7.1, November 2023) negotiates Docker API version 1.25, which
+Docker Engine 25 and later refuse:
+
+```
+level=error msg="Error response from daemon: client version 1.25 is too old.
+Minimum supported API version is 1.40, please upgrade your client to a newer version"
+```
+
+Watchtower then exits and silently stops updating anything. Pinning the API
+version it requests to 1.40 keeps it working against current engines.
 
 ### IPV6
 
