@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM debian:trixie-slim
 
 # LABEL about the custom image
 LABEL maintainers="benoit@alphatux.fr, ps@massa.org"
@@ -17,7 +17,8 @@ ENV PATH_NODE=/massa/massa-node
 ENV PATH_NODE_CONF=/massa/massa-node/config
 
 # Update and install packages dependencies
-RUN apt-get update && apt install -y curl jq
+RUN apt-get update && apt-get install -y --no-install-recommends curl jq ca-certificates procps \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY bin /massa-guard/bin
 
