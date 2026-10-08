@@ -1,3 +1,5 @@
 .idea
 massa_mount
 .env
+custom-bin/*
+!custom-bin/.gitkeep

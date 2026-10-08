@@ -33,6 +33,24 @@ RUN if [ "$TARGETARCH" = "amd64" ]; then \
     curl -Ls -o $FILENAME $NODE_URL; \
     tar -xf $FILENAME && rm $FILENAME
 
+# Optional locally built node. Drop the binary at custom-bin/massa-node (amd64)
+# or custom-bin/massa-node-arm64 (arm64). Absent files keep the release binary.
+# Configs and massa-client still come from the VERSION release above.
+COPY custom-bin/ /tmp/custom-bin/
+RUN if [ "$TARGETARCH" = "amd64" ]; then \
+        CUSTOM="/tmp/custom-bin/massa-node"; \
+    else \
+        CUSTOM="/tmp/custom-bin/massa-node-arm64"; \
+    fi; \
+    if [ -f "$CUSTOM" ]; then \
+        cp "$CUSTOM" /massa/massa-node/massa-node; \
+        chmod +x /massa/massa-node/massa-node; \
+        echo "Embedded custom massa-node ($TARGETARCH)"; \
+    else \
+        echo "Using massa-node from release $VERSION"; \
+    fi; \
+    rm -rf /tmp/custom-bin
+
 # Create massa-guard tree
 RUN mkdir -p /massa-guard/sources
 
