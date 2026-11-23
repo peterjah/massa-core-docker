@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       massa_version:
-        description: "Massa node release to embed (GitHub release tag of massalabs/massa, e.g. MAIN.5.0)"
+        description: "Massa node release to embed (GitHub release tag of massalabs/massa, e.g. MAIN.6.0)"
         required: true
         type: string
       docker_tag:
